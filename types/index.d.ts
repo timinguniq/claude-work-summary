@@ -8,8 +8,10 @@ export type WorkSummary = {
   error: string
 }
 
+export type SummaryTab = 'files' | 'did' | 'learn'
+
 declare module 'claude-code' {
   interface PluginState {
-    'work-summary': { entries: WorkSummary[] }
+    'work-summary': { entries: WorkSummary[]; tab: SummaryTab }
   }
 }

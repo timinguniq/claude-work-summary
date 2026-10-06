@@ -1,15 +1,21 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, ToolCallInput } from 'claude-code'
 
-import type { WorkSummary } from '../types'
+import type { SummaryTab, WorkSummary } from '../types'
 
 const PANE = 'work-summary'
 const TITLE = '작업 요약'
 const KEEP = 20
 const SHOWN_FILES = 8
 const ANSWER_CHARS = 3000
+const TABS: { key: SummaryTab; label: string }[] = [
+  { key: 'files', label: '바꾼 파일' },
+  { key: 'did', label: '한 일' },
+  { key: 'learn', label: '배울 점' },
+]
 
 const entries = atom({ plugin: 'work-summary', key: 'entries' } as const, [])
+const tab = atom({ plugin: 'work-summary', key: 'tab' } as const, 'files')
 
 let turn = { id: '', prompt: '' }
 let changed = new Set<string>()
@@ -69,30 +75,43 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Text } = $.ui.resolve(e)
+    const { Box, Button, Text } = $.ui.resolve(e)
     const list = await read($, entries)
     if (list.length === 0) {
       return <Text dimColor>파일을 바꾼 턴이 끝나면 여기에 요약이 쌓입니다.</Text>
     }
+    const shown = await read($, tab)
 
     return (
       <Box flexDirection="column">
+        <Box columnGap={1} marginBottom={1}>
+          {TABS.map(one => (
+            <Button
+              key={one.key}
+              label={one.label}
+              variant={one.key === shown ? 'primary' : 'secondary'}
+              dimColor={one.key !== shown}
+              onPress={() => void update($, tab, () => one.key)}
+            />
+          ))}
+        </Box>
         {list.map(entry => (
           <Box flexDirection="column" marginBottom={1}>
             <Text bold wrap="truncate-end">▸ {entry.prompt}</Text>
-            <Text dimColor>바꾼 파일</Text>
-            {entry.files.slice(0, SHOWN_FILES).map(file => (
+            {shown === 'files' && entry.files.slice(0, SHOWN_FILES).map(file => (
               <Text wrap="truncate-start">  {file}</Text>
             ))}
-            {entry.files.length > SHOWN_FILES && (
+            {shown === 'files' && entry.files.length > SHOWN_FILES && (
               <Text dimColor>  외 {entry.files.length - SHOWN_FILES}개</Text>
             )}
-            {entry.status === 'pending' && <Text dimColor>요약 중…</Text>}
-            {entry.status === 'failed' && <Text dimColor>요약 실패: {entry.error}</Text>}
-            {entry.did.length > 0 && <Text dimColor>한 일</Text>}
-            {entry.did.map(line => <Text>  • {line}</Text>)}
-            {entry.learn.length > 0 && <Text dimColor>배울 점</Text>}
-            {entry.learn.map(line => <Text>  • {line}</Text>)}
+            {shown !== 'files' && entry.status === 'pending' && <Text dimColor>  요약 중…</Text>}
+            {shown !== 'files' && entry.status === 'failed' && (
+              <Text dimColor>  요약 실패: {entry.error}</Text>
+            )}
+            {shown !== 'files' && entry.status === 'done' && entry[shown].length === 0 && (
+              <Text dimColor>  없음</Text>
+            )}
+            {shown !== 'files' && entry[shown].map(line => <Text>  • {line}</Text>)}
           </Box>
         ))}
       </Box>

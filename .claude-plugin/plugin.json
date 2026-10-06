@@ -1,6 +1,6 @@
 {
   "name": "work-summary",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "파일을 바꾼 턴이 끝나면 오른쪽 패널에 바꾼 파일·한 일·배울 점을 짧게 정리합니다",
   "types": "./types/index.d.ts"
 }
