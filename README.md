@@ -17,10 +17,18 @@ Claude Code mod. 파일을 바꾼 턴이 끝나면 오른쪽 패널에 **바꾼 
 터미널의 Claude Code 프롬프트에서:
 
 ```
-/plugin install work-summary --marketplace timinguniq/claude-work-summary
+/plugin marketplace add timinguniq/claude-work-summary
+/plugin install work-summary@claude-work-summary
 ```
 
-마켓플레이스 추가를 물으면 `y`, 범위는 user를 고릅니다. 그 세션부터 바로 동작하고, 이후 새 세션에서도 켜집니다.
+또는 셸에서:
+
+```
+claude plugin marketplace add timinguniq/claude-work-summary
+claude plugin install work-summary@claude-work-summary
+```
+
+user 범위로 설치되어 이후 새 세션에서 켜집니다. 이미 열려 있는 세션에서는 `/reload-plugins`로 불러옵니다.
 
 업데이트: `claude plugin update work-summary` 후 `/reload-plugins`.
 
