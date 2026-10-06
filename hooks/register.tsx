@@ -8,10 +8,10 @@ const TITLE = '작업 요약'
 const KEEP = 20
 const SHOWN_FILES = 8
 const ANSWER_CHARS = 3000
-const TABS: { key: SummaryTab; label: string }[] = [
-  { key: 'files', label: '바꾼 파일' },
-  { key: 'did', label: '한 일' },
-  { key: 'learn', label: '배울 점' },
+const TABS: { key: SummaryTab; label: string; hotkey: string }[] = [
+  { key: 'files', label: '바꾼 파일', hotkey: '1' },
+  { key: 'did', label: '한 일', hotkey: '2' },
+  { key: 'learn', label: '배울 점', hotkey: '3' },
 ]
 
 const entries = atom({ plugin: 'work-summary', key: 'entries' } as const, [])
@@ -84,12 +84,13 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column">
-        <Box columnGap={1} marginBottom={1}>
+        <Box columnGap={2} marginBottom={1}>
           {TABS.map(one => (
             <Button
               key={one.key}
               label={one.label}
-              variant={one.key === shown ? 'primary' : 'secondary'}
+              hotkey={one.hotkey}
+              plain
               dimColor={one.key !== shown}
               onPress={() => void update($, tab, () => one.key)}
             />

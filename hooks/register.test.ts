@@ -86,6 +86,10 @@ test('each tab shows its own section alone', async ($, on) => {
       expect((await ui.find({ text: '색은 design-guide 토큰만 쓴다' })) !== undefined).toBe(learn)
     }
 
+    for (const [key, hotkey] of [['files', '1'], ['did', '2'], ['learn', '3']] as const) {
+      expect((await ui.find({ type: 'Button', key }))?.props.hotkey).toBe(hotkey)
+    }
+
     await ui.press({ key: 'files' })
     await shows(true, false, false)
     await ui.press({ key: 'did' })
