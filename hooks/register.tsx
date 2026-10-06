@@ -5,6 +5,7 @@ import type { SummaryTab, WorkSummary } from '../types'
 
 const PANE = 'work-summary'
 const TITLE = '작업 요약'
+const OPEN = { id: PANE, title: TITLE, columns: 40 }
 const KEEP = 20
 const SHOWN_FILES = 8
 const ANSWER_CHARS = 3000
@@ -26,13 +27,13 @@ export const register: Register = on => {
       name: 'work-summary',
       description: '바꾼 파일·한 일·배울 점 패널을 엽니다',
     })
-    void $.ui.open({ id: PANE, title: TITLE })
+    void $.ui.open(OPEN)
 
     return next(e)
   })
 
   on('command.run', { command: 'work-summary' }, async $ => {
-    await $.ui.open({ id: PANE, title: TITLE })
+    await $.ui.open(OPEN)
 
     return { text: '작업 요약 패널을 열었습니다.' }
   })
